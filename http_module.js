@@ -1,8 +1,13 @@
 const http = require("http")
 
 const server = http.createServer((req,res)=>{
-  res.writeHead(200,{"content-type":"text/plain"})
-  res.end("Hello Node.js")
+  const user = {
+    name: "Bruce Wayne",
+    age: 24,
+    isMarried: false
+  }
+  res.writeHead(200,{"content-type":"application/json"})
+  res.end(JSON.stringify(user))
 })
 
 server.listen(3000,()=>{
