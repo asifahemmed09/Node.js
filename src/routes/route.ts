@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { getProducts } from "../controllers/product.controller";
+import { productController } from "../controllers/product.controller";
 
 const routeHandler = (req: IncomingMessage, res: ServerResponse) => {
     const url = req.url;
@@ -13,7 +13,7 @@ const routeHandler = (req: IncomingMessage, res: ServerResponse) => {
         }),
       );
     } else if (url?.startsWith("/products") && method == "GET") {
-        getProducts(req,res)
+        productController(req,res)
     } else {
       res.writeHead(404, { "content-type": "application/json" });
       res.end(
