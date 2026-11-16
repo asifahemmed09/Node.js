@@ -1,9 +1,9 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { url } from "inspector";
-import { productService } from "../services/product.service";
+import { createProduct, productService } from "../services/product.service";
 import type { IProduct } from "../types/product";
+import { bodyParser } from "../utils/parseBody";
 
-export const productController = (
+export const productController = async (
   req: IncomingMessage,
   res: ServerResponse,
 ) => {
@@ -31,5 +31,25 @@ export const productController = (
         data: product,
       }),
     );
+  } else if (method === "POST" && url === "/products") {
+    try {
+      const data = await bodyParser(req);
+      const newProduct: IProduct = {
+        id: Date.now(),
+        ...data
+      }
+      const updatedProducts = [...products, newProduct];
+      createProduct(updatedProducts);
+      res.writeHead(201, { "content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          success: true,
+          message: "Product created successfully",
+          data: data,
+        }),
+      );
+    } catch (error) {
+        console.log(error);
+    }
   }
 };
