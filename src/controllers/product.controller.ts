@@ -36,8 +36,8 @@ export const productController = async (
       const data = await bodyParser(req);
       const newProduct: IProduct = {
         id: Date.now(),
-        ...data
-      }
+        ...data,
+      };
       const updatedProducts = [...products, newProduct];
       createProduct(updatedProducts);
       res.writeHead(201, { "content-type": "application/json" });
@@ -49,7 +49,40 @@ export const productController = async (
         }),
       );
     } catch (error) {
-        console.log(error);
+      console.log(error);
+    }
+  } else if (method === "PUT" && id !== null) {
+    try {
+      const data = await bodyParser(req);
+      const productIndex = products.findIndex(
+        (p: IProduct) => p.id == Number(id),
+      );
+      if( productIndex < 0){
+        res.writeHead(404, { "content-type": "application/json" });
+        res.end(
+          JSON.stringify({
+            success: false,
+            message: "Product not found",
+          }),
+        );
+      }
+        const updatedProduct: IProduct = {
+          ...products[productIndex],
+          ...data
+        };
+        const updatedProducts = [...products];
+        updatedProducts[productIndex] = updatedProduct;
+        createProduct(updatedProducts);
+        res.writeHead(200, { "content-type": "application/json" });
+        res.end(
+          JSON.stringify({
+            success: true,
+            message: "Product updated successfully",
+            data: updatedProduct,
+          }),
+        );
+    } catch (error) {
+      console.log(error);
     }
   }
 };
