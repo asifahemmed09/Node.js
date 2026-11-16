@@ -23,6 +23,15 @@ export const productController = async (
     );
   } else if (method === "GET" && id !== null) {
     const product = products.find((p: IProduct) => p.id == Number(id));
+    if (!product) {
+      res.writeHead(404, { "content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          success: false,
+          message: "Product not found",
+        }),
+      );
+    }
     res.writeHead(200, { "content-type": "application/json" });
     res.end(
       JSON.stringify({
@@ -57,7 +66,7 @@ export const productController = async (
       const productIndex = products.findIndex(
         (p: IProduct) => p.id == Number(id),
       );
-      if( productIndex < 0){
+      if (productIndex < 0) {
         res.writeHead(404, { "content-type": "application/json" });
         res.end(
           JSON.stringify({
@@ -66,23 +75,45 @@ export const productController = async (
           }),
         );
       }
-        const updatedProduct: IProduct = {
-          ...products[productIndex],
-          ...data
-        };
-        const updatedProducts = [...products];
-        updatedProducts[productIndex] = updatedProduct;
-        createProduct(updatedProducts);
-        res.writeHead(200, { "content-type": "application/json" });
-        res.end(
-          JSON.stringify({
-            success: true,
-            message: "Product updated successfully",
-            data: updatedProduct,
-          }),
-        );
+      const updatedProduct: IProduct = {
+        ...products[productIndex],
+        ...data,
+      };
+      const updatedProducts = [...products];
+      updatedProducts[productIndex] = updatedProduct;
+      createProduct(updatedProducts);
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          success: true,
+          message: "Product updated successfully",
+          data: updatedProduct,
+        }),
+      );
     } catch (error) {
       console.log(error);
     }
+  } else if (method === "DELETE" && id !== null) {
+    const productIndex = products.findIndex(
+      (p: IProduct) => p.id == Number(id),
+    );
+    if (productIndex < 0) {
+      res.writeHead(404, { "content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          success: false,
+          message: "Product not found",
+        }),
+      );
+    }
+    const updatedProducts = products.filter((p: IProduct) => p.id !== Number(id));
+    createProduct(updatedProducts);
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(
+      JSON.stringify({
+        success: true,
+        message: "Product deleted successfully",
+      }),
+    );
   }
 };
